@@ -15,6 +15,7 @@
 1. [删除保护](2-preventive-arch/删除保护.md)
 1. [兼容性设计](2-preventive-arch/兼容性设计.md)
 1. [灰度](2-preventive-arch/灰度.md)
+1. [无感升级](2-preventive-arch/无感升级.md)
 1. [流量控制](2-preventive-arch/流量控制.md)
 1. [监控告警](2-preventive-arch/监控告警.md)
 1. [容灾切换](2-preventive-arch/容灾切换.md)
