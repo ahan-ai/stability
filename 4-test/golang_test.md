@@ -82,4 +82,117 @@ go tool cover -html=c.out -o=tag.html # 生成html文件
 ```
 5. 加上 -count=1 可以 disable cache，避免使用缓存而不实际运行测试用例。
 # 利用 Mock 进行测试
-# 利用 failpoint 进行测试
+Golang 有很多常见的 Mock 库，我们这里以字节跳动开源的 mockey 为例，给出一个示例：
+
+```
+package mock
+
+import (
+	"fmt"
+	"testing"
+
+	. "github.com/bytedance/mockey"
+	. "github.com/smartystreets/goconvey/convey"
+)
+
+// Simple function
+func Foo(in string) string {
+	return in
+}
+
+// Function method (value receiver)
+type A struct{}
+
+func (a A) Foo(in string) string { return in }
+
+// Function method (pointer receiver)
+type B struct{}
+
+func (b *B) Foo(in string) string { return in }
+
+// Value
+var Bar = 0
+
+func TestMockDemo(t *testing.T) {
+
+	PatchConvey("Function mocking", t, func() {
+		Mock(Foo).Return("c").Build()         // mock function
+		So(Foo("anything"), ShouldEqual, "c") // assert `Foo` is mocked
+	})
+
+	PatchConvey("Method mocking (value receiver)", t, func() {
+		Mock(A.Foo).Return("c").Build()              // mock method
+		So(new(A).Foo("anything"), ShouldEqual, "c") // assert `A.Foo` is mocked
+	})
+
+	PatchConvey("Method mocking (pointer receiver)", t, func() {
+		Mock((*B).Foo).Return("c").Build() // mock method
+		b := &B{}
+		So(b.Foo("anything"), ShouldEqual, "c") // assert `*B.Foo` is mocked
+	})
+
+	PatchConvey("Variable mocking", t, func() {
+		MockValue(&Bar).To(1)   // mock variable
+		So(Bar, ShouldEqual, 1) // assert `Bar` is mocked
+	})
+
+	// the mocks are released automatically outside `PatchConvey`
+	fmt.Println(Foo("a"))        // a
+	fmt.Println(new(A).Foo("b")) // b
+	fmt.Println(Bar)             // 0
+}
+
+```
+# 利用 Failpoint 进行故障注入
+
+绝大部分情况下，使用 Mock 库足以应对大部分的 UT 场景。Mock 库对原代码（被测试的正式代码）几乎没有侵入性，这意味着我们不需要对正式代码进行改造来实现 mock。
+但有一些场景，我们希望程序在更为真实的环境中运行，并且动态地注入一些随机故障。这时候，failpoint 库就可以发挥作用。
+我们来看一个实际的例子：
+
+
+```
+package main
+
+import (
+	"errors"
+	"fmt"
+	"reflect"
+
+	"github.com/pingcap/failpoint"
+)
+
+type Empty struct {
+}
+
+func Cmd() error {
+	if val, _err_ := failpoint.Eval(FailpointName(Empty{}, "Cmd", "ErrorX")); _err_ == nil {
+		if tmpstr, ok := val.(string); ok {
+			return errors.New(tmpstr)
+		}
+	}
+	return nil
+}
+
+func FailpointName(packageStruct any, funcName string, name string) string {
+	return reflect.TypeOf(packageStruct).PkgPath() + ":" + funcName + ":" + name
+}
+
+func main() {
+	// 激活故障点
+	failpoint.Enable(FailpointName(Empty{}, "Cmd", "ErrorX"), "return(\"error when test\")")
+	// 返回特定的 error 'error when test' 。这里 hardcode 了错误信息，而实际上这个错误信息可以由外部传入，达到更为灵活的故障注入的目的。
+	fmt.Println(Cmd())
+	// 取消故障点
+	failpoint.Disable(FailpointName(Empty{}, "Cmd", "ErrorX"))
+	// 返回 nil
+	fmt.Println(Cmd())
+	fmt.Println(FailpointName(Empty{}, "Cmd", "ErrorX"))
+
+}
+
+
+```
+
+Failpoint 的机制和 mock 不同，体现在：
+1. failpoint 的代码同样也是生产代码的一部分，只是平时故障注入点（failpoint.Eval）并不会被激活。仅在做一些故障注入测试的时候，可以灵活地注入各种故障。
+2. 不需要特殊的编译选项。
