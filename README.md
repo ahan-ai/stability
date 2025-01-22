@@ -17,12 +17,12 @@
 1. [灰度](2-preventive-arch/灰度.md)
 1. [无感升级](2-preventive-arch/无感升级.md)
 1. [流量控制](2-preventive-arch/流量控制.md)
-1. [监控告警](2-preventive-arch/监控告警.md)
+1. [重试](2-preventive-arch/重试.md)
 1. [容灾切换](2-preventive-arch/容灾切换.md)
 1. [SOP](2-preventive-arch/SOP.md)
 1. [应急指挥](2-preventive-arch/应急指挥.md)
 
-# Part 3 监控&告警
+# Part 3 可观测
 
 # Part 4 测试
 1. [测试](4-test/测试.md)
