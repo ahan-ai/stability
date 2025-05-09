@@ -23,8 +23,6 @@
 1. [应急指挥](2-preventive-arch/应急指挥.md)
 
 # Part 3 可观测
-1. [测试](3-observability/README.md)
+1. [可观测](3-observability/README.md)
 # Part 4 测试
 1. [测试](4-test/测试.md)
-
-# Part 5 安全
