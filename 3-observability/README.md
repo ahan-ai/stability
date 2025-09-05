@@ -13,3 +13,4 @@
 
 1. [可观测架构](3-observability/可观测架构.md)
 1. [指标监控](3-observability/指标监控.md)
+1. [告警](3-observability/告警.md)
