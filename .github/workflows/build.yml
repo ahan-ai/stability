@@ -28,14 +28,15 @@ jobs:
       - name: Build site and PDF
         run: mkdocs build --clean
 
+      - name: Debug check site directory
+        run: ls -lh site
+
       - name: Create release and upload PDF
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ github.run_number }}          # 自动生成一个版本号，如 v15
-          name: Release ${{ github.run_number }}  # Release 名称
-          body: |
-            本次自动生成的电子书 PDF。
-            构建号: ${{ github.run_number }}
-          files: site/mybook.pdf
+          tag: v${{ github.run_number }}
+          name: Release ${{ github.run_number }}
+          body: "自动生成的电子书 PDF"
+          files: site/mybook.pdf   # 如果 ls 结果里没有这个文件，需要改这里
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
