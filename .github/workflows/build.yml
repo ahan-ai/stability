@@ -5,12 +5,16 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -21,16 +25,17 @@ jobs:
         run: |
           pip install mkdocs mkdocs-material mkdocs-with-pdf
 
-      - name: Build site
-        run: mkdocs build
-
-      - name: Build PDF
+      - name: Build site and PDF
         run: mkdocs build --clean
 
-      - name: Upload PDF to Release
-        uses: softprops/action-gh-release@v1
+      - name: Create release and upload PDF
+        uses: ncipollo/release-action@v1
         with:
+          tag: v${{ github.run_number }}          # 自动生成一个版本号，如 v15
+          name: Release ${{ github.run_number }}  # Release 名称
+          body: |
+            本次自动生成的电子书 PDF。
+            构建号: ${{ github.run_number }}
           files: site/mybook.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
