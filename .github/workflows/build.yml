@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # 必须有写权限才能上传附件
+  contents: write   # 必须有写权限才能创建 Release
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       # 1️⃣ 检出仓库
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 保留完整历史，方便 tag
+          fetch-depth: 0
 
       # 2️⃣ 设置 Python
       - name: Set up Python
@@ -32,14 +32,14 @@ jobs:
       - name: Build site and PDF
         run: mkdocs build --clean
 
-      # 5️⃣ 确认 PDF 是否生成
+      # 5️⃣ 调试，确认 PDF 生成
       - name: Debug check PDF
         run: |
           echo "Current directory: $(pwd)"
           find site -type f -name "*.pdf"
 
-      # 6️⃣ 移动 PDF 到根目录，确保上传路径正确
-      - name: Move PDF to root
+      # 6️⃣ 移动 PDF 到临时目录，保证路径简单
+      - name: Move PDF to tmp directory
         run: |
           mkdir -p tmp_pdf
           mv $(find site -type f -name "*.pdf") tmp_pdf/
@@ -47,11 +47,10 @@ jobs:
 
       # 7️⃣ 创建 Release 并上传 PDF
       - name: Create release and upload PDF
-        uses: ncipollo/release-action@v1
+        uses: softprops/action-gh-release@v1
         with:
-          tag: v${{ github.run_number }}          # 自动生成唯一 tag
-          name: Release ${{ github.run_number }}
-          body: "自动生成电子书 PDF"
-          files: tmp_pdf/*.pdf
+          tag_name: v${{ github.run_number }}       # 自动生成唯一 tag
+          name: Release ${{ github.run_number }}    # Release 名称
+          files: tmp_pdf/*.pdf                       # 上传 PDF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
