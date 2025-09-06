@@ -1,0 +1,28 @@
+site_name: 我的电子书
+site_description: 使用 MkDocs 编写和发布的电子书
+site_author: 张三
+repo_url: https://github.com/<用户名>/<仓库名>
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - content.code.annotate
+plugins:
+  - search
+  - with-pdf:              # 生成 PDF
+      output_path: mybook.pdf
+      cover_title: "我的电子书"
+      cover_subtitle: "副标题"
+      author: "张三"
+      copyright: "© 2025"
+      toc_title: "目录"
+      cover_logo: docs/assets/cover.png   # 自定义封面图片
+nav:
+  - 简介: index.md
+  - 第一章 简介:
+      - 概览: 1-overview/README.md
+  - 第二章 设计:
+      - 概览: 2-preventive-arch/README.md
