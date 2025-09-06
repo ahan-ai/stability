@@ -1,24 +1,19 @@
 site_name: 我的电子书
+site_url: https://github.com/ahan-ai/stability
 site_description: 使用 MkDocs 编写和发布的电子书
 site_author: 阿涵
-repo_url: https://github.com/ahan-ai/stability
 theme:
   name: material
-  language: zh
-  features:
-    - navigation.expand
-    - navigation.top
-    - toc.integrate
-    - content.code.annotate
+
 plugins:
   - search
-  - with-pdf:              # 生成 PDF
-      output_path: mybook.pdf
-      cover_title: "我的电子书"
-      cover_subtitle: "副标题"
-      author: "阿涵"
-      copyright: "© 2025"
-      toc_title: "目录"
-      cover_logo: docs/assets/cover.png   # 自定义封面图片
+  - with-pdf:
+      output_path: site/mybook.pdf    # 生成 PDF 文件位置
+      media_type: print               # 打印样式
+      toc: true                       # 包含目录
+      pdf_stylesheets:
+        - docs/pdf.css                # PDF 专用样式
 nav:
   - 简介: index.md
+extra_css:
+  - stylesheets/extra.css  # 如果网页样式和 PDF 样式不同，可分开
