@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release PDF
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write   # 必须有写权限才能上传附件
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       # 1️⃣ 检出仓库
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # 保留完整历史，方便 tag
 
       # 2️⃣ 设置 Python
       - name: Set up Python
@@ -32,25 +32,26 @@ jobs:
       - name: Build site and PDF
         run: mkdocs build --clean
 
-      # 5️⃣ 调试，查看 site 目录
-      - name: Debug site directory
-        run: ls -R site
-
-      # 6️⃣ 自动找到 PDF 并上传 Release
-      - name: Find PDF and upload to release
-        id: upload_pdf
+      # 5️⃣ 确认 PDF 是否生成
+      - name: Debug check PDF
         run: |
-          # 找到 site 目录下的第一个 pdf 文件
-          PDF_FILE=$(find site -type f -name "*.pdf" | head -n 1)
-          echo "Found PDF: $PDF_FILE"
-          echo "pdf_path=$PDF_FILE" >> $GITHUB_OUTPUT
+          echo "Current directory: $(pwd)"
+          find site -type f -name "*.pdf"
 
+      # 6️⃣ 移动 PDF 到根目录，确保上传路径正确
+      - name: Move PDF to root
+        run: |
+          mkdir -p tmp_pdf
+          mv $(find site -type f -name "*.pdf") tmp_pdf/
+          ls -lh tmp_pdf
+
+      # 7️⃣ 创建 Release 并上传 PDF
       - name: Create release and upload PDF
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ github.run_number }}
+          tag: v${{ github.run_number }}          # 自动生成唯一 tag
           name: Release ${{ github.run_number }}
           body: "自动生成电子书 PDF"
-          files: ${{ steps.upload_pdf.outputs.pdf_path }}
+          files: tmp_pdf/*.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
