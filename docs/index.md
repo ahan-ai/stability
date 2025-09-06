@@ -10,11 +10,11 @@
 
 事前防御的介绍是稳定性建设中篇幅最长的一部分。这一部分，我们会分享几十种常见的稳定性风险，并说明如何通过合理的设计尽可能规避这些风险。
 
-2. [避免单点故障](2-preventive-arch/避免单点故障.md)
-1. [备份核心数据](2-preventive-arch/备份.md)
-1. [隔离](2-preventive-arch/隔离.md)
-1. [删除保护](2-preventive-arch/删除保护.md)
-1. [兼容性设计](2-preventive-arch/兼容性设计.md)
+1. [避免单点故障](2-preventive-arch/避免单点故障.md)
+2. [备份核心数据](2-preventive-arch/备份.md)
+3. [隔离](2-preventive-arch/隔离.md)
+4. [删除保护](2-preventive-arch/删除保护.md)
+5. [兼容性设计](2-preventive-arch/兼容性设计.md)
 1. [灰度](2-preventive-arch/灰度.md)
 1. [无感升级](2-preventive-arch/无感升级.md)
 1. [流量控制](2-preventive-arch/流量控制.md)
