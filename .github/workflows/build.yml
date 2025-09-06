@@ -12,31 +12,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ 检出仓库
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      # 2️⃣ 设置 Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
+      # 3️⃣ 安装依赖
       - name: Install dependencies
         run: |
           pip install mkdocs mkdocs-material mkdocs-with-pdf
 
+      # 4️⃣ 构建站点和 PDF
       - name: Build site and PDF
         run: mkdocs build --clean
 
-      - name: Debug check site directory
-        run: ls -lh site
+      # 5️⃣ 调试，查看 site 目录
+      - name: Debug site directory
+        run: ls -R site
+
+      # 6️⃣ 自动找到 PDF 并上传 Release
+      - name: Find PDF and upload to release
+        id: upload_pdf
+        run: |
+          # 找到 site 目录下的第一个 pdf 文件
+          PDF_FILE=$(find site -type f -name "*.pdf" | head -n 1)
+          echo "Found PDF: $PDF_FILE"
+          echo "pdf_path=$PDF_FILE" >> $GITHUB_OUTPUT
 
       - name: Create release and upload PDF
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ github.run_number }}
           name: Release ${{ github.run_number }}
-          body: "自动生成的电子书 PDF"
-          files: site/mybook.pdf   # 如果 ls 结果里没有这个文件，需要改这里
+          body: "自动生成电子书 PDF"
+          files: ${{ steps.upload_pdf.outputs.pdf_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

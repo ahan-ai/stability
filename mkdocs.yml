@@ -22,7 +22,3 @@ plugins:
       cover_logo: docs/assets/cover.png   # 自定义封面图片
 nav:
   - 简介: index.md
-  - 第一章 简介:
-      - 概览: 1-overview/README.md
-  - 第二章 设计:
-      - 概览: 2-preventive-arch/README.md
