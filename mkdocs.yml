@@ -6,13 +6,10 @@ theme:
   name: material
 
 plugins:
-  - search
   - with-pdf:
-      output_path: site/mybook.pdf    # 生成 PDF 文件位置
-      media_type: print               # 打印样式
-      toc: true                       # 包含目录
+      output_path: site/mybook.pdf
       pdf_stylesheets:
-        - docs/pdf.css                # PDF 专用样式
+        - docs/pdf.css
 nav:
   - 简介: index.md
 extra_css:
