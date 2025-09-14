@@ -11,7 +11,8 @@ master_doc = 'index'
 
 # 扩展
 extensions = [
-    'recommonmark',   # 支持 Markdown
+    # 'recommonmark',   # 支持 Markdown
+    "myst_parser",
 ]
 
 # HTML 主题
@@ -48,6 +49,64 @@ latex_elements = {
 ''',
 }
 
+# latex_use_xindy = True
+# latex_elements = {
+#     # The paper size ('letterpaper' or 'a4paper').
+#     'papersize': 'a4paper',
+
+#     # The font size ('10pt', '11pt' or '12pt').
+#     # 'pointsize': '12pt',
+#     'pointsize': '10pt',
+#     # 'classoptions': ',english',
+#     'inputenc': '',
+#     'utf8extra': '',
+#     'extraclassoptions': 'openany',
+
+#     # Additional stuff for the LaTeX preamble.
+#     'preamble': r'''
+# \usepackage{xeCJK}
+# \usepackage{indentfirst}
+# \setlength{\parindent}{2em}
+# \setCJKmainfont[BoldFont=SimHei, ItalicFont=STKaiti]{SimSun}
+# \setCJKmonofont[Scale=0.9]{SimSun}
+# \setCJKfamilyfont{song}[BoldFont=SimSun]{SimSun}
+# \setCJKfamilyfont{sf}[BoldFont=SimSun]{SimSun}
+# ''',
+#     # 'fncychap': r'\usepackage[Bjornstrup]{fncychap}',
+#     # 'printindex': r'\footnotesize\raggedright\printindex',
+# }
+# latex_elements['preamble'] = r"""
+# \usepackage{xeCJK}
+# \usepackage{indentfirst}
+# \setlength{\parindent}{2em}
+# \setCJKmainfont[BoldFont=SimHei, ItalicFont=STKaiti]{SimSun}
+# \setCJKmonofont[Scale=0.9]{SimSun}
+# \setCJKfamilyfont{song}[BoldFont=SimSun]{SimSun}
+# \setCJKfamilyfont{sf}[BoldFont=SimSun]{SimSun}
+# \XeTeXlinebreaklocale "zh"
+# \XeTeXlinebreakskip = 0pt plus 1pt
+# \parindent 2em
+# \definecolor{VerbatimColor}{rgb}{0.95,0.95,0.95}
+# \setcounter{tocdepth}{3}
+# \renewcommand\familydefault{\ttdefault}
+# \renewcommand\CJKfamilydefault{\CJKrmdefault}
+# """
+
 latex_documents = [
     ('index', 'stability.tex', project, author, 'manual'),
+]
+
+
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "substitution",
+    "tasklist",
+    "strikethrough",
+    "tables",  # 关键
 ]

@@ -62,7 +62,7 @@ SLA：Service Level Agreement 服务水平协议，是企业围绕SLO发布的�
 
 ### 稳定性、可靠性、可用性的关联
 
-![稳定性、可靠性、可用性的关联](https://ahan-ai.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2F0230be5e-247e-4743-853d-4bf435bf7756%2Fimage.png?table=block&id=15deda9f-236a-80e3-8f35-f6a4765a9a81&spaceId=3841c813-6aff-406c-8c94-6fa3c0018b15&width=900&userId=&cache=v2)
+![稳定性、可靠性、可用性的关联](images_local/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2F0230be5e-247e-4743-853d-4bf435bf7756%2Fimage.png)
 
 - **可靠性**和**可用性**是**稳定性**的重要组成部分：
     - 系统的可靠性和可用性是稳定性得以实现的基础。
