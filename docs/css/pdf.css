@@ -1,0 +1,59 @@
+@font-face {
+    font-family: "Noto Sans CJK SC";
+    src: url("fonts/NotoSansCJKsc-Regular.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Noto Sans CJK SC";
+    src: url("fonts/NotoSansCJKsc-Bold.otf") format("opentype");
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* 全局正文 */
+body {
+    font-family: "Noto Sans CJK SC", "Arial", sans-serif;
+    font-size: 14pt;
+    line-height: 1.6;
+    margin: 2cm;
+    color: #000000;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Noto Sans CJK SC", sans-serif;
+    font-weight: bold;
+    color: #000000;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h1 { font-size: 24pt; }
+h2 { font-size: 20pt; }
+h3 { font-size: 18pt; }
+h4 { font-size: 16pt; }
+
+/* 代码块 */
+code, pre {
+    font-family: "Courier New", monospace;
+    font-size: 12pt;
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+/* 表格 */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 8px;
+}
