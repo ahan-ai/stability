@@ -1,3 +1,5 @@
+# Test
+Englishword.
 # 如何衡量稳定性
 
 我们明白了稳定性的概念后，下一个问题是，我们如何衡量稳定性呢？通常业界最常用的指标有：
@@ -60,6 +62,7 @@ SLA：Service Level Agreement 服务水平协议，是企业围绕SLO发布的�
 
 ### 稳定性、可靠性、可用性的关联
 
+![稳定性、可靠性、可用性的关联](images_local/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2F0230be5e-247e-4743-853d-4bf435bf7756%2Fimage.png)
 
 - **可靠性**和**可用性**是**稳定性**的重要组成部分：
     - 系统的可靠性和可用性是稳定性得以实现的基础。
@@ -83,7 +86,7 @@ SLA：Service Level Agreement 服务水平协议，是企业围绕SLO发布的�
 
 稳定性的保证，需要有体系化的建设思路，覆盖了整个软件工程的方方面面，从研发，到测试，到上线，到变更，逐步落地，层层护航，是一个**庞杂的系统化工程**。
 
-
+![Untitled](https://ahan-ai.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2Feb5339e0-50e3-440d-9806-ed5d0dfd7be8%2FUntitled.png?table=block&id=e2424a2c-19cb-4bc2-acd2-a9ceaf5da5c7&spaceId=3841c813-6aff-406c-8c94-6fa3c0018b15&width=1420&userId=&cache=v2)
 
 笔者将会按事前防御、事中应对、事后复盘、流程规范四个部分展开，力求对稳定性的建设有个全面的说明，希望读者在阅读后可以有些收获。
 

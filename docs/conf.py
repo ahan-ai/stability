@@ -108,5 +108,5 @@ myst_enable_extensions = [
     "substitution",
     "tasklist",
     "strikethrough",
-    "tables",  # 关键
+    #"tables",  # 关键
 ]
