@@ -6,7 +6,7 @@
    :caption: 第一部分 稳定性架构设计
    
    1-overview/index
-   1-overview/index2
+   .. 1-overview/index2
    .. 2-preventive-arch/避免单点故障.md
    .. 2-preventive-arch/备份.md
    .. 2-preventive-arch/隔离.md
