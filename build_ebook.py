@@ -25,7 +25,7 @@ def collect_parts():
 # Pandoc Markdown → LaTeX
 def md_to_latex(md_file):
     result = subprocess.run(
-        ["pandoc", md_file, "-f", "markdown", "-t", "latex", "--metadata", "link-citations=false", "--no-highlight", "--top-level-division=chapter", "--wrap=none"],
+        ["pandoc", md_file, "-f", "markdown", "-t", "latex", "--metadata", "link-citations=false", "--no-highlight", "--top-level-division=section", "--wrap=none"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         encoding="utf-8"
@@ -56,7 +56,7 @@ def main():
     for part in parts:
         part["readme_tex"] = md_to_latex(part["readme"]) if part["readme"] else ""
         chapters_data = []
-        for chap in part["chapters"]:
+        for chap in part["chapters"]: # chap 是章节(md)的完整路径
             tex = md_to_latex(chap)
             # 获取章节标题
             first_line = tex.strip().split("\n")[0]
