@@ -1,22 +1,9 @@
-# Makefile for Sphinx documentation
+.PHONY: all clean book.pdf
 
-# 目录
-SPHINXBUILD   = sphinx-build
-SOURCEDIR     = docs
-BUILDDIR      = $(SOURCEDIR)/_build
+all: book.pdf
 
-# 默认构建 HTML
-html:
-	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html
-	@echo "Build finished. HTML files are in $(BUILDDIR)/html"
+book.pdf:
+	python3 build_ebook.py
 
-# 构建 LaTeX 再生成 PDF (强制使用 xelatex)
-latexpdf:
-	$(SPHINXBUILD) -b latex $(SOURCEDIR) $(BUILDDIR)/latex
-	latexmk -xelatex -f -cd $(BUILDDIR)/latex/stability.tex
-	@echo "Build finished. PDF file is in $(BUILDDIR)/latex"
-
-# 清理构建目录
 clean:
-	rm -rf $(BUILDDIR)
-	@echo "Cleaned build directory."
+	rm -rf build/*.tex build/*.aux build/*.log build/*.pdf book.pdf
