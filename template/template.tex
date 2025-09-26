@@ -3,6 +3,13 @@
 \usepackage{fontspec}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}  % Pandoc 可能生成 >{\raggedright\arraybackslash} 这种写法
+\usepackage[strings]{underscore}  % 允许章节名里用下划线
+% Pandoc 用到的 \tightlist 定义
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \geometry{a4paper, margin=2cm}
 
 % 设置中文字体
