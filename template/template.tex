@@ -11,7 +11,6 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \geometry{a4paper, margin=2cm}
-
 % 设置中文字体
 \setCJKmainfont[Path=./chapters/fonts/]{NotoSansCJKsc-Regular}
 \setCJKfamilyfont{hei}[Path=./chapters/fonts/]{NotoSansCJKsc-Bold}
@@ -21,15 +20,15 @@
 
 \begin{document}
 
-{% for part in parts %}
-\part{ {{ part.title }} }
-{{ part.readme_tex }}
+<% for part in parts %>
+\part{ << part.title >> }
+<< part.readme_tex >>
 
-{% for chapter in part.chapters_data %}
-\chapter{ {{ chapter.title }} }
-{{ chapter.tex }}
-{% endfor %}
+<% for chapter in part.chapters_data %>
+\chapter{ << chapter.title >> }
+<< chapter.tex >>
+<% endfor %>
 
-{% endfor %}
+<% endfor %>
 
 \end{document}

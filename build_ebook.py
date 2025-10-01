@@ -1,6 +1,7 @@
 import os
 import subprocess
 from jinja2 import Template
+from jinja2 import Environment
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHAPTERS_DIR = os.path.join(BASE_DIR, "chapters")
@@ -38,6 +39,8 @@ def md_to_latex(md_file):
     # 移除所有 \label{...} 防止中文导致报错
     import re
     tex = re.sub(r'\\label\{.*?\}', '', tex)
+    # 将 “▪” 替换为 “\textbullet{}”
+    tex = tex.replace("▪", "\\textbullet{}")
     return tex
 
 # 渲染 LaTeX 模板
@@ -45,7 +48,17 @@ def render_tex(parts):
     template_path = os.path.join(BASE_DIR, "template", "template.tex")
     with open(template_path, "r", encoding="utf-8") as f:
         template_content = f.read()
-    template = Template(template_content)
+    env = Environment(
+        block_start_string = '<%',
+        block_end_string = '%>',
+        variable_start_string = '<<',
+        variable_end_string = '>>',
+        comment_start_string = '<#',
+        comment_end_string = '#>',
+        autoescape = False
+    )
+    template = env.from_string(template_content)
+    # template = Template(template_content)
     return template.render(parts=parts)
 
 def main():
