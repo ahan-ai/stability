@@ -6,6 +6,12 @@
 \usepackage{longtable}  % Pandoc 默认表格环境
 \usepackage{booktabs}   % Pandoc 默认用的横线命令
 \usepackage{calc}       % 处理 p{(\linewidth - ...)} 的列宽计算
+\usepackage{graphicx}
+
+\usepackage{indentfirst} % 让章节首段缩进
+\setlength{\parindent}{2em} % 设置缩进为 2 个汉字宽
+% 如果只想简单处理，直接让 pandocbounded 等于原内容
+\newcommand{\pandocbounded}[1]{#1}
 
 \usepackage[strings]{underscore}  % 允许章节名里用下划线
 % 设置中文字体
@@ -14,7 +20,8 @@
 
 % 使用 \textbf{} 时，Bold 字体会生效
 \renewcommand{\bfdefault}{b}
-
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \begin{document}
 
 <% for part in parts %>

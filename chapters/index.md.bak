@@ -9,7 +9,7 @@
 - 2023年11月12日17:44分，阿里云遭遇了一场罕见的大规模故障，全国多个地域的云产品控制台访问及API调用出现异常，影响了阿里云的核心业务，包括淘宝、闲鱼、钉钉等。这场故障持续了近两个小时，期间，阿里云的工程师们紧急介入排查和处理，最终在19:20分左右，恢复了正常服务。
 - 2022年12月18日，阿里云香港 Region 可用区 C 发生大规模服务中断事件。由于香港Region可用区C机房冷却系统失效，包间温度逐渐升高，导致一机房包间温度达到临界值触发消防系统喷淋，电源柜和多列机柜进水，部分机器硬件损坏。整个处置过程超过10小时。彼时，澳门特区司法警察局曾发布公告，由于阿里云的香港机房节点发生故障，导致澳门金融管理局、澳门银河、莲花卫视、澳门水泥厂等关键基础设施营运者的网站、澳觅和MFood等外卖平台、以及澳门日报等本地传媒应用程式，自当日中午开始暂时无法访问使用。
 
-![Untitled](https://ahan-ai.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2Fe33d3c46-3168-4ebe-be43-7cd552a4222c%2FUntitled.png?table=block&id=9cc920b6-4a02-49f8-bef7-b4eee1743153&spaceId=3841c813-6aff-406c-8c94-6fa3c0018b15&width=1420&userId=&cache=v2)
+![Untitled](https://ahan-ai.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F3841c813-6aff-406c-8c94-6fa3c0018b15%2Fe33d3c46-3168-4ebe-be43-7cd552a4222c%2FUntitled.png?table=block&id=9cc920b6-4a02-49f8-bef7-b4eee1743153&spaceId=3841c813-6aff-406c-8c94-6fa3c0018b15&width=1720&userId=&cache=v2)
 
 - 2022年.6.13：华为云华南-广州区域公网访问异常，持续30分钟以上。
 - 2018年11月23日亚马逊网络服务（AWS）的核心服务器在韩国全国发生中断，导致两个主要的加密货币在线交易平台停止运作。AWS是全球广泛使用的云服务之一，受到内部核心服务器故障的影响，导致主要的数字资产交易平台Upbit和Coinone戛然而止。据外媒报道，几个主要的电子商务中心在大约一个小时内也无法访问。
