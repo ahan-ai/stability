@@ -13,6 +13,7 @@ BUILD_DIR = os.path.join(BASE_DIR, "build")
 OUTPUT_TEX = os.path.join(BUILD_DIR, "book.tex")
 OUTPUT_PDF = os.path.join(BASE_DIR, "book.pdf")
 MEDIA_DIR = os.path.join(BUILD_DIR, "media")
+DEFAULT_IMAGE = os.path.join(BASE_DIR, "images/empty.jpg")
 
 # 遍历 Part + Chapter
 def collect_parts():
@@ -31,6 +32,8 @@ def collect_parts():
 
 def _download_image(url, media_dir):
     """下载远程图片到 media_dir，返回本地相对路径（相对于 BASE_DIR），或 None."""
+
+    default_image_path = os.path.relpath(DEFAULT_IMAGE, BUILD_DIR).replace("\\", "/")
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -38,7 +41,7 @@ def _download_image(url, media_dir):
             ctype = resp.headers.get("Content-Type", "")
     except Exception as e:
         print("warn: 下载图片失败:", url, e)
-        return None
+        return default_image_path
 
     # 推断扩展名
     ext = None
@@ -59,12 +62,12 @@ def _download_image(url, media_dir):
     try:
         with open(out_path, "wb") as f:
             f.write(data)
-        # 返回相对于 BASE_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
+        # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
         rel = os.path.relpath(out_path, BUILD_DIR)
         return rel.replace("\\", "/")
     except Exception as e:
         print("warn: 写文件失败:", out_path, e)
-        return None
+        return default_image_path
 
 def _localize_images_in_md(md_path):
     """读取 md 文件，下载所有远程图片（常见的 ![alt](url) 以及 <img src="url">），
@@ -118,7 +121,6 @@ def _localize_images_in_md(md_path):
         f.write(text)
     return out_md
 
-# Pandoc Markdown → LaTeX
 # Pandoc Markdown → LaTeX
 def md_to_latex(md_file):
     """
