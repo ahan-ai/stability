@@ -119,6 +119,7 @@ def _localize_images_in_md(md_path):
     return out_md
 
 # Pandoc Markdown → LaTeX
+# Pandoc Markdown → LaTeX
 def md_to_latex(md_file):
     """
     将 Markdown 转 LaTeX，保证图片路径可直接在 build/book.tex 中生成 PDF。
@@ -152,19 +153,22 @@ def md_to_latex(md_file):
     # 4. 替换特殊符号 ▪ → \textbullet{}
     tex = tex.replace("▪", "\\textbullet{}")
 
-    # 5. 修正 \includegraphics
+    # 5. 修正 \includegraphics，统一包裹一层 \pandocbounded
     def fix_graphics(match):
-        # 路径
-        path = match.group(2)
+        # 原路径
+        path = match.group(2).strip()
+
         # 路径转为绝对路径再相对于 BASE_DIR
         abs_path = os.path.abspath(os.path.join(BUILD_DIR, path)) if not os.path.isabs(path) else path
         rel_path = os.path.relpath(abs_path, BASE_DIR).replace("\\", "/")
+        # 转义下划线
+        rel_path = rel_path.replace("_", "\\_")
 
-        # 使用固定选项
+        # 固定选项
         options = "[keepaspectratio,width=\\linewidth]"
 
-        # 使用 \pandocbounded 包裹
-        return f"\\pandocbounded{{\\includegraphics{options}{{{rel_path}}}}}"
+        # 返回单层 pandocbounded 包裹
+        return f"\\includegraphics{options}{{{rel_path}}}"
 
     tex = re.sub(
         r'\\includegraphics(\[.*?\])\{(.*?)\}',
