@@ -206,10 +206,11 @@ def main():
         part["readme_tex"] = md_to_latex(part["readme"]) if part["readme"] else ""
         chapters_data = []
         for chap in part["chapters"]: # chap 是章节(md)的完整路径
+            file_name = os.path.splitext(os.path.basename(chap))[0]
             tex = md_to_latex(chap)
             # 获取章节标题
             first_line = tex.strip().split("\n")[0]
-            title = first_line.replace("\\section{", "").replace("}", "") if first_line.startswith("\\section") else os.path.basename(chap)
+            title = first_line.replace("\\section{", "").replace("}", "") if first_line.startswith("\\section") else file_name
             chapters_data.append({"title": title, "tex": tex})
         part["chapters_data"] = chapters_data
 
