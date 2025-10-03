@@ -15,15 +15,20 @@
 
 \usepackage[strings]{underscore}  % 允许章节名里用下划线
 % 设置中文字体
-\setCJKmainfont[Path=./chapters/fonts/]{NotoSansCJKsc-Regular}
-\setCJKfamilyfont{hei}[Path=./chapters/fonts/]{NotoSansCJKsc-Bold}
+\setCJKmainfont[
+  Path=./chapters/fonts/,
+  BoldFont = NotoSansCJKsc-Bold,
+  ItalicFont = NotoSansCJKsc-Regular,      % 斜体用伪斜体
+  BoldItalicFont = NotoSansCJKsc-Bold,    % 粗斜体用粗体 + 伪斜体
+  AutoFakeSlant = 0.2
+]{NotoSansCJKsc-Regular}
 
 % 使用 \textbf{} 时，Bold 字体会生效
 \renewcommand{\bfdefault}{b}
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\begin{document}
 
+\begin{document}
 <% for part in parts %>
 \part{ << part.title >> }
 << part.readme_tex >>
