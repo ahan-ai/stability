@@ -6,4 +6,4 @@ book.pdf:
 	python3 build_ebook.py
 
 clean:
-	rm -rf build/*.tex build/*.aux build/*.log build/*.pdf book.pdf
+	rm -rf build images/cache book.pdf 

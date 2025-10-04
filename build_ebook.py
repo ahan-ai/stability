@@ -14,6 +14,7 @@ OUTPUT_TEX = os.path.join(BUILD_DIR, "book.tex")
 OUTPUT_PDF = os.path.join(BASE_DIR, "book.pdf")
 MEDIA_DIR = os.path.join(BUILD_DIR, "media")
 DEFAULT_IMAGE = os.path.join(BASE_DIR, "images/empty.jpg")
+IMAGE_CACHE = os.path.join(BASE_DIR, "images/cache")
 
 # 遍历 Part + Chapter
 def collect_parts():
@@ -30,8 +31,32 @@ def collect_parts():
             parts.append(part)
     return parts
 
-def _download_image(url, media_dir):
+def _download_image_with_cache(url, media_dir):
     """下载远程图片到 media_dir，返回本地相对路径（相对于 BASE_DIR），或 None."""
+
+    # 检查缓存目录
+    os.makedirs(IMAGE_CACHE, exist_ok=True)
+
+    # 用 URL 的 hash 生成文件名，避免非法字符
+    h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
+    fname = f"img-{h}"
+
+    # 检查缓存
+    cached_path = os.path.join(IMAGE_CACHE, fname)
+    if os.path.exists(cached_path):
+        # 复制到 media_dir
+        out_path = os.path.join(media_dir, fname)
+        if not os.path.exists(out_path):
+            try:
+                with open(cached_path, "rb") as src, open(out_path, "wb") as dst:
+                    dst.write(src.read())
+            except Exception as e:
+                print("warn: 复制缓存图片失败:", cached_path, e)
+                return None
+        # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
+        rel = os.path.relpath(out_path, BUILD_DIR)
+        print("使用缓存图片:", url, "->", rel)
+        return rel.replace("\\", "/")
 
     default_image_path = os.path.relpath(DEFAULT_IMAGE, BUILD_DIR).replace("\\", "/")
     try:
@@ -43,25 +68,11 @@ def _download_image(url, media_dir):
         print("warn: 下载图片失败:", url, e)
         return default_image_path
 
-    # 推断扩展名
-    ext = None
-    if ctype:
-        ctype_main = ctype.split(";")[0].strip()
-        ext = mimetypes.guess_extension(ctype_main)
-    # 如果从 URL path 得到扩展名优先
-    path_ext = os.path.splitext(urllib.parse.urlsplit(url).path)[1]
-    if path_ext and len(path_ext) <= 6:
-        ext = path_ext
-    if not ext:
-        ext = ".png"
-
-    # 用 URL 的 hash 生成文件名，避免非法字符
-    h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
-    fname = f"img-{h}{ext}"
     out_path = os.path.join(media_dir, fname)
     try:
-        with open(out_path, "wb") as f:
+        with open(out_path, "wb") as f, open(cached_path, "wb") as cache_f:
             f.write(data)
+            cache_f.write(data)
         # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
         rel = os.path.relpath(out_path, BUILD_DIR)
         return rel.replace("\\", "/")
@@ -90,7 +101,7 @@ def _localize_images_in_md(md_path):
         if url.startswith("<") and url.endswith(">"):
             url = url[1:-1]
         if url.lower().startswith("http"):
-            local = _download_image(url, MEDIA_DIR)
+            local = _download_image_with_cache(url, MEDIA_DIR)
             if local:
                 return f'![{alt}]({local})'
             else:
@@ -105,7 +116,7 @@ def _localize_images_in_md(md_path):
     def html_repl(m):
         url = m.group(1).strip()
         if url.lower().startswith("http"):
-            local = _download_image(url, MEDIA_DIR)
+            local = _download_image_with_cache(url, MEDIA_DIR)
             if local:
                 # 用 markdown 语法替换为普通图片引用（pandoc 更容易处理）
                 return f'![]({local})'
