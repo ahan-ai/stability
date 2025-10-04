@@ -2,6 +2,11 @@
 \usepackage{xeCJK}
 \usepackage{fontspec}
 \usepackage{hyperref}
+
+\usepackage{xurl}              % 支持更智能的 URL 换行
+\setlength{\emergencystretch}{3em}  % 容许 LaTeX 自动拉伸行距，减少 Overfull
+\usepackage{microtype}  % 更好的排版,微调间距，使超宽行不再报错
+
 \usepackage{array}      % Pandoc 生成的 >{\raggedright\arraybackslash} 需要
 \usepackage{longtable}  % Pandoc 默认表格环境
 \usepackage{booktabs}   % Pandoc 默认用的横线命令
@@ -22,6 +27,8 @@
   BoldItalicFont = NotoSansCJKsc-Bold,    % 粗斜体用粗体 + 伪斜体
   AutoFakeSlant = 0.2
 ]{NotoSansCJKsc-Regular}
+
+\setmainfont{Times New Roman}
 
 % 使用 \textbf{} 时，Bold 字体会生效
 \renewcommand{\bfdefault}{b}

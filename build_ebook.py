@@ -32,32 +32,36 @@ def collect_parts():
     return parts
 
 def _download_image_with_cache(url, media_dir):
-    """下载远程图片到 media_dir，返回本地相对路径（相对于 BASE_DIR），或 None."""
+    """下载远程图片到 media_dir，返回本地相对路径（相对于BUILD_DIR），或 None。"""
 
-    # 检查缓存目录
     os.makedirs(IMAGE_CACHE, exist_ok=True)
+    os.makedirs(media_dir, exist_ok=True)
 
-    # 用 URL 的 hash 生成文件名，避免非法字符
+    # 根据 URL 生成 hash
     h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
-    fname = f"img-{h}"
 
-    # 检查缓存
-    cached_path = os.path.join(IMAGE_CACHE, fname)
-    if os.path.exists(cached_path):
-        # 复制到 media_dir
-        out_path = os.path.join(media_dir, fname)
+    # -------- (1) 尝试从缓存目录中找到相同 hash 的文件（不论扩展名）--------
+    cached_file = None
+    for f in os.listdir(IMAGE_CACHE):
+        if f.startswith(f"img-{h}"):
+            cached_file = os.path.join(IMAGE_CACHE, f)
+            break
+
+    if cached_file and os.path.exists(cached_file):
+        ext = os.path.splitext(cached_file)[1]
+        out_path = os.path.join(media_dir, f"img-{h}{ext}")
         if not os.path.exists(out_path):
             try:
-                with open(cached_path, "rb") as src, open(out_path, "wb") as dst:
+                with open(cached_file, "rb") as src, open(out_path, "wb") as dst:
                     dst.write(src.read())
             except Exception as e:
-                print("warn: 复制缓存图片失败:", cached_path, e)
+                print("warn: 复制缓存图片失败:", cached_file, e)
                 return None
-        # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
-        rel = os.path.relpath(out_path, BUILD_DIR)
+        rel = os.path.relpath(out_path, BUILD_DIR).replace("\\", "/")
         print("使用缓存图片:", url, "->", rel)
-        return rel.replace("\\", "/")
+        return rel
 
+    # -------- (2) 下载图片 --------
     default_image_path = os.path.relpath(DEFAULT_IMAGE, BUILD_DIR).replace("\\", "/")
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -68,17 +72,85 @@ def _download_image_with_cache(url, media_dir):
         print("warn: 下载图片失败:", url, e)
         return default_image_path
 
+    # -------- (3) 自动推断扩展名 --------
+    # 优先从 Content-Type 判断
+    ext = mimetypes.guess_extension(ctype.split(";")[0].strip()) if ctype else None
+    # 如果没有，尝试从 URL 后缀判断
+    if not ext:
+        parsed = urllib.parse.urlparse(url)
+        path_ext = os.path.splitext(parsed.path)[1]
+        if path_ext and len(path_ext) <= 5:
+            ext = path_ext
+    # 如果仍无扩展名，默认 jpg
+    if not ext:
+        ext = ".jpg"
+
+    fname = f"img-{h}{ext}"
     out_path = os.path.join(media_dir, fname)
+    cached_path = os.path.join(IMAGE_CACHE, fname)
+
+    # -------- (4) 写入文件并缓存 --------
     try:
         with open(out_path, "wb") as f, open(cached_path, "wb") as cache_f:
             f.write(data)
             cache_f.write(data)
-        # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
-        rel = os.path.relpath(out_path, BUILD_DIR)
-        return rel.replace("\\", "/")
+        rel = os.path.relpath(out_path, BUILD_DIR).replace("\\", "/")
+        print("下载新图片:", url, "->", rel)
+        return rel
     except Exception as e:
         print("warn: 写文件失败:", out_path, e)
         return default_image_path
+
+
+# def _download_image_with_cache(url, media_dir):
+#     """下载远程图片到 media_dir，返回本地相对路径（相对于 BASE_DIR），或 None."""
+
+#     # 检查缓存目录
+#     os.makedirs(IMAGE_CACHE, exist_ok=True)
+#     os.makedirs(media_dir, exist_ok=True)
+
+#     # 用 URL 的 hash 生成文件名，避免非法字符
+#     h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
+#     fname = f"img-{h}"
+
+#     # 检查缓存
+#     cached_path = os.path.join(IMAGE_CACHE, fname)
+#     if os.path.exists(cached_path):
+#         # 复制到 media_dir
+#         out_path = os.path.join(media_dir, fname)
+#         if not os.path.exists(out_path):
+#             try:
+#                 with open(cached_path, "rb") as src, open(out_path, "wb") as dst:
+#                     dst.write(src.read())
+#             except Exception as e:
+#                 print("warn: 复制缓存图片失败:", cached_path, e)
+#                 return None
+#         # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
+#         rel = os.path.relpath(out_path, BUILD_DIR)
+#         print("使用缓存图片:", url, "->", rel)
+#         return rel.replace("\\", "/")
+
+#     default_image_path = os.path.relpath(DEFAULT_IMAGE, BUILD_DIR).replace("\\", "/")
+#     try:
+#         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+#         with urllib.request.urlopen(req, timeout=30) as resp:
+#             data = resp.read()
+#             ctype = resp.headers.get("Content-Type", "")
+#     except Exception as e:
+#         print("warn: 下载图片失败:", url, e)
+#         return default_image_path
+
+#     out_path = os.path.join(media_dir, fname)
+#     try:
+#         with open(out_path, "wb") as f, open(cached_path, "wb") as cache_f:
+#             f.write(data)
+#             cache_f.write(data)
+#         # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
+#         rel = os.path.relpath(out_path, BUILD_DIR)
+#         return rel.replace("\\", "/")
+#     except Exception as e:
+#         print("warn: 写文件失败:", out_path, e)
+#         return default_image_path
 
 def _localize_images_in_md(md_path):
     """读取 md 文件，下载所有远程图片（常见的 ![alt](url) 以及 <img src="url">），
