@@ -27,8 +27,16 @@
   BoldItalicFont = NotoSansCJKsc-Bold,    % 粗斜体用粗体 + 伪斜体
   AutoFakeSlant = 0.2
 ]{NotoSansCJKsc-Regular}
+\setCJKfamilyfont{hei}[Path=./chapters/fonts/]{NotoSansCJKsc-Bold}
+
+% ✅ 新增：定义中文等宽字体，供 \texttt{}、verbatim 等使用
+\setCJKmonofont[
+  Path=./chapters/fonts/,
+  AutoFakeSlant = 0.1
+]{NotoSansCJKsc-Regular}
 
 \setmainfont{Times New Roman}
+
 
 % 使用 \textbf{} 时，Bold 字体会生效
 \renewcommand{\bfdefault}{b}
