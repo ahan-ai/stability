@@ -37,6 +37,26 @@
 
 \setmainfont{Times New Roman}
 
+% listings：自动换行、且断行标记用简单可靠的表达式
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,            % 自动换行
+  breakatwhitespace=false,    % 允许在任意位置断行（必要时）
+  columns=fixed,              % 关键：使用 fixed 列模型，避免分割宏 token
+  keepspaces=true,
+  showstringspaces=false,
+  postbreak=\raisebox{0pt}[0pt][0pt]{\ensuremath{\rightarrow}\,}, % 简洁箭头（不含 \textcolor）
+  % 如果你还想要灰色箭头，可以用下面这行（但 prior 版本更稳健）
+  % postbreak=\raisebox{0pt}[0pt][0pt]{\color{gray}\ensuremath{\rightarrow}\,},
+  frame=none
+}
+
+% --- fix Pandoc passthrough ---
+\newcommand{\passthrough}[1]{#1}
+
 
 % 使用 \textbf{} 时，Bold 字体会生效
 \renewcommand{\bfdefault}{b}

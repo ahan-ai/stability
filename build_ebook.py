@@ -221,7 +221,8 @@ def md_to_latex(md_file):
             "--metadata", "link-citations=false",
             "--no-highlight",
             "--top-level-division=section",
-            "--wrap=none"
+            "--wrap=none",
+            "--listings"
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
