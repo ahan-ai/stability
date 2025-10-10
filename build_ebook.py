@@ -6,6 +6,7 @@ import urllib.request
 import urllib.parse
 import hashlib
 import mimetypes
+import yaml
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHAPTERS_DIR = os.path.join(BASE_DIR, "chapters")
@@ -13,11 +14,43 @@ BUILD_DIR = os.path.join(BASE_DIR, "build")
 OUTPUT_TEX = os.path.join(BUILD_DIR, "book.tex")
 OUTPUT_PDF = os.path.join(BASE_DIR, "book.pdf")
 MEDIA_DIR = os.path.join(BUILD_DIR, "media")
-DEFAULT_IMAGE = os.path.join(BASE_DIR, "images/empty.jpg")
+DEFAULT_IMAGE = os.path.join(BASE_DIR, "images/empty.png")
 IMAGE_CACHE = os.path.join(BASE_DIR, "images/cache")
 
-# 遍历 Part + Chapter
-def collect_parts():
+def collect_parts_from_yaml():
+    yaml_path = os.path.join(BASE_DIR, "book.yaml")
+    if not os.path.exists(yaml_path):
+        return None
+
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        book_data = yaml.safe_load(f)
+
+    parts = []
+    for part in book_data.get("parts", []):
+        part_name = part.get("name") or os.path.basename(part["path"])
+        part_path = os.path.join(CHAPTERS_DIR, part["path"])
+        readme_path = os.path.join(part_path, "README.md")
+        readme = readme_path if os.path.exists(readme_path) else ""
+
+        chapters = []
+        for ch in part.get("chapters", []):
+            ch_name = ch.get("name") or os.path.splitext(os.path.basename(ch["file"]))[0]
+            ch_file = os.path.join(part_path, ch["file"])
+            if os.path.exists(ch_file):
+                chapters.append({"title": ch_name, "path": ch_file})
+            else:
+                print(f"⚠️  警告: 找不到章节文件 {ch_file}")
+
+        parts.append({
+            "title": part_name,
+            "readme": readme,
+            "chapters": [c["path"] for c in chapters],
+            "chapter_titles": {c["path"]: c["title"] for c in chapters}
+        })
+
+    return parts
+
+def collect_parts_auto():
     parts = []
     for item in sorted(os.listdir(CHAPTERS_DIR)):
         part_path = os.path.join(CHAPTERS_DIR, item)
@@ -30,6 +63,17 @@ def collect_parts():
                     part["chapters"].append(os.path.join(part_path, f))
             parts.append(part)
     return parts
+
+# ✅ 统一接口：优先从 book.yaml 读取，否则扫描
+def collect_parts():
+    parts = collect_parts_from_yaml()
+    if parts:
+        print("📘 使用 book.yaml 中定义的章节结构")
+        return parts
+    else:
+        print("📗 未找到 book.yaml，自动扫描 chapters 目录结构")
+        return collect_parts_auto()
+
 
 def _download_image_with_cache(url, media_dir):
     """下载远程图片到 media_dir，返回本地相对路径（相对于BUILD_DIR），或 None。"""
