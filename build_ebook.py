@@ -146,56 +146,6 @@ def _download_image_with_cache(url, media_dir):
         return default_image_path
 
 
-# def _download_image_with_cache(url, media_dir):
-#     """下载远程图片到 media_dir，返回本地相对路径（相对于 BASE_DIR），或 None."""
-
-#     # 检查缓存目录
-#     os.makedirs(IMAGE_CACHE, exist_ok=True)
-#     os.makedirs(media_dir, exist_ok=True)
-
-#     # 用 URL 的 hash 生成文件名，避免非法字符
-#     h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
-#     fname = f"img-{h}"
-
-#     # 检查缓存
-#     cached_path = os.path.join(IMAGE_CACHE, fname)
-#     if os.path.exists(cached_path):
-#         # 复制到 media_dir
-#         out_path = os.path.join(media_dir, fname)
-#         if not os.path.exists(out_path):
-#             try:
-#                 with open(cached_path, "rb") as src, open(out_path, "wb") as dst:
-#                     dst.write(src.read())
-#             except Exception as e:
-#                 print("warn: 复制缓存图片失败:", cached_path, e)
-#                 return None
-#         # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
-#         rel = os.path.relpath(out_path, BUILD_DIR)
-#         print("使用缓存图片:", url, "->", rel)
-#         return rel.replace("\\", "/")
-
-#     default_image_path = os.path.relpath(DEFAULT_IMAGE, BUILD_DIR).replace("\\", "/")
-#     try:
-#         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-#         with urllib.request.urlopen(req, timeout=30) as resp:
-#             data = resp.read()
-#             ctype = resp.headers.get("Content-Type", "")
-#     except Exception as e:
-#         print("warn: 下载图片失败:", url, e)
-#         return default_image_path
-
-#     out_path = os.path.join(media_dir, fname)
-#     try:
-#         with open(out_path, "wb") as f, open(cached_path, "wb") as cache_f:
-#             f.write(data)
-#             cache_f.write(data)
-#         # 返回相对于 BUILD_DIR 的路径（便于 pandoc 生成的 tex 路径直接可用）
-#         rel = os.path.relpath(out_path, BUILD_DIR)
-#         return rel.replace("\\", "/")
-#     except Exception as e:
-#         print("warn: 写文件失败:", out_path, e)
-#         return default_image_path
-
 def _localize_images_in_md(md_path):
     """读取 md 文件，下载所有远程图片（常见的 ![alt](url) 以及 <img src="url">），
        替换为本地路径，写入 build 下的临时 md 并返回其路径。
@@ -337,8 +287,9 @@ def main():
             file_name = os.path.splitext(os.path.basename(chap))[0]
             tex = md_to_latex(chap)
             # 获取章节标题
-            first_line = tex.strip().split("\n")[0]
-            title = first_line.replace("\\section{", "").replace("}", "") if first_line.startswith("\\section") else file_name
+            # first_line = tex.strip().split("\n")[0]
+            # title = first_line.replace("\\section{", "").replace("}", "") if first_line.startswith("\\section") else file_name
+            title = file_name
             chapters_data.append({"title": title, "tex": tex})
         part["chapters_data"] = chapters_data
 
