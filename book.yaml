@@ -1,11 +1,20 @@
 title: 分布式系统稳定性
 author: 阿涵
 parts:
-  - name: 概述与架构设计
+  - name: 稳定性概述（Foundations of Stability）
     path: 1-overview
     chapters:
       - name: 概述
         file: 概述.md
+
+  - name: 预防性架构设计（Preventive Architecture）
+    path: 2-preventive-arch
+    chapters:
+      - file: 备份.md
+      - file: 避免单点故障.md
+      - file: 弹性.md
+      - file: 隔离.md
+
 
   - name: 可观测性架构
     path: 3-observability
