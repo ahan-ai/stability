@@ -63,6 +63,12 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+% 移除空白页
+\makeatletter
+\let\cleardoublepage\clearpage
+\makeatother
+
+
 \begin{document}
 <% for part in parts %>
 \part{ << part.title >> }
