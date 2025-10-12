@@ -35,6 +35,7 @@ def collect_parts_from_yaml():
         chapters = []
         for ch in part.get("chapters", []):
             ch_name = ch.get("name") or os.path.splitext(os.path.basename(ch["file"]))[0]
+            print("ch_name:", ch_name)
             ch_file = os.path.join(part_path, ch["file"])
             if os.path.exists(ch_file):
                 chapters.append({"title": ch_name, "path": ch_file})
@@ -45,7 +46,7 @@ def collect_parts_from_yaml():
             "title": part_name,
             "readme": readme,
             "chapters": [c["path"] for c in chapters],
-            "chapter_titles": {c["path"]: c["title"] for c in chapters}
+            "chapter_titles": [c["title"] for c in chapters]
         })
 
     return parts
@@ -283,13 +284,18 @@ def main():
     for part in parts:
         part["readme_tex"] = md_to_latex(part["readme"]) if part["readme"] else ""
         chapters_data = []
-        for chap in part["chapters"]: # chap 是章节(md)的完整路径
-            file_name = os.path.splitext(os.path.basename(chap))[0]
+        for i in range(len(part["chapters"])):
+            chap = part["chapters"][i]# chap 是章节(md)的完整路径
+            if part["chapter_titles"]:
+                title = part["chapter_titles"][i]
+            else:
+                file_name = os.path.splitext(os.path.basename(chap))[0]
+                title = file_name
             tex = md_to_latex(chap)
             # 获取章节标题
             # first_line = tex.strip().split("\n")[0]
             # title = first_line.replace("\\section{", "").replace("}", "") if first_line.startswith("\\section") else file_name
-            title = file_name
+            
             chapters_data.append({"title": title, "tex": tex})
         part["chapters_data"] = chapters_data
 

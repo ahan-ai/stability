@@ -14,7 +14,9 @@ parts:
       - file: 避免单点故障.md
       - file: 弹性.md
       - file: 隔离.md
-
+      - file: 灰度.md
+        name: 灰度发布
+      - file: 兼容性设计
 
   - name: 可观测性架构
     path: 3-observability
