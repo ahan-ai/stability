@@ -148,14 +148,48 @@ def _download_image_with_cache(url, media_dir):
 
 
 def _localize_images_in_md(md_path):
-    """读取 md 文件，下载所有远程图片（常见的 ![alt](url) 以及 <img src="url">），
-       替换为本地路径，写入 build 下的临时 md 并返回其路径。
+    """
+    读取 md 文件：
+      - 下载远程图片
+      - 复制本地图片到 build/media
+      - 替换为本地路径
+    返回新 md 的路径（位于 build/ 下）。
     """
     with open(md_path, "r", encoding="utf-8") as f:
         text = f.read()
 
     # 确保 media 目录存在
     os.makedirs(MEDIA_DIR, exist_ok=True)
+    md_dir = os.path.dirname(md_path)
+
+    def _copy_local_image(src_path):
+        """
+        复制本地图片到 MEDIA_DIR 下，返回相对 build 的路径。
+        """
+        if not os.path.isabs(src_path):
+            src_path = os.path.join(md_dir, src_path)
+        src_path = os.path.normpath(src_path)
+
+        if not os.path.exists(src_path):
+            print(f"⚠️  找不到本地图片: {src_path}")
+            return None
+
+        # 保留文件名，用哈希避免冲突
+        h = hashlib.sha1(src_path.encode("utf-8")).hexdigest()[:8]
+        fname = f"local-{h}{os.path.splitext(src_path)[1]}"
+        dst_path = os.path.join(MEDIA_DIR, fname)
+
+        try:
+            if not os.path.exists(dst_path):
+                os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+                with open(src_path, "rb") as src, open(dst_path, "wb") as dst:
+                    dst.write(src.read())
+            rel = os.path.relpath(dst_path, BUILD_DIR).replace("\\", "/")
+            print(f"📸 本地图片已复制: {src_path} -> {rel}")
+            return rel
+        except Exception as e:
+            print("⚠️  复制本地图片失败:", src_path, e)
+            return None
 
     # 1) 处理标准 Markdown 图片语法 ![alt](url "title")
     #    这个 regex 适用于大多数情况（注意：若 url 包含未配对的括号，可能失效）
@@ -164,22 +198,19 @@ def _localize_images_in_md(md_path):
     def md_repl(m):
         alt = m.group(1)
         url = m.group(2).strip()
-        # 如果 url 有尖括号 <...>, 去掉
         if url.startswith("<") and url.endswith(">"):
             url = url[1:-1]
+
         if url.lower().startswith("http"):
             local = _download_image_with_cache(url, MEDIA_DIR)
-            if local:
-                return f'![{alt}]({local})'
-            else:
-                return m.group(0)  # 下载失败，保持原样
         else:
-            return m.group(0)
+            local = _copy_local_image(url)
+        return f'![{alt}]({local or url})'
 
     text = md_img_re.sub(md_repl, text)
 
     # 2) 处理 HTML <img src="..."> 的情况（Notion 导出有时会用这种）
-    html_img_re = re.compile(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>')
+    md_img_re = re.compile(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>')
     def html_repl(m):
         url = m.group(1).strip()
         if url.lower().startswith("http"):
@@ -191,12 +222,23 @@ def _localize_images_in_md(md_path):
                 return m.group(0)
         else:
             return m.group(0)
-    text = html_img_re.sub(html_repl, text)
+    text = md_img_re.sub(html_repl, text)
 
-    # 写入到 build 下的临时 md（文件名保持不变）
+    # 处理 HTML 图片 <img src="...">
+    html_img_re = re.compile(r'<img[^>]+src=["\']([^"\']+)["\'][^>]*>')
+    def html_repl(m):
+        url = m.group(1).strip()
+        if url.lower().startswith("http"):
+            local = _download_image_with_cache(url, MEDIA_DIR)
+        else:
+            local = _copy_local_image(url)
+        return f'![]({local or url})'
+
+    text = html_img_re.sub(html_repl, text)
     out_md = os.path.join(BUILD_DIR, os.path.basename(md_path))
     with open(out_md, "w", encoding="utf-8") as f:
         f.write(text)
+
     return out_md
 
 # Pandoc Markdown → LaTeX
