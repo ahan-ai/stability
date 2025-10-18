@@ -15,16 +15,16 @@ parts:
       - file: 弹性.md
       - file: 隔离.md
       - file: 灰度发布与无感升级.md
-      - file: 兼容性设计
-      - file: 重试与幂等
-      - file: 应急指挥
-      - file: 删除保护
+      - file: 兼容性设计.md
+      - file: 重试与幂等.md
+      - file: 应急指挥.md
+      - file: 删除保护.md
   - name: 从测试到演练（From Testing to Chaos Drills）
     path: 4-test
     chapters:
-      - file: 测试.md
-      - file: 测试流水线.md
       - file: 单元测试：构建稳定性的最小单元.md
+      - file: 测试流水线.md
+        name: 流水线三部曲
       - file: 故障演练.md
       - file: 故障注入.md
   - name: 可观测性架构
