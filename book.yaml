@@ -25,8 +25,7 @@ parts:
       - file: 单元测试：构建稳定性的最小单元.md
       - file: 测试流水线.md
         name: 流水线三部曲
-      - file: 故障演练.md
-      - file: 故障注入.md
+      - file: 混沌测试.md
   - name: 可观测性架构
     path: 3-observability
     chapters:
