@@ -2,13 +2,13 @@ title: 分布式系统稳定性
 author: 阿涵
 parts:
   - name: 稳定性概述（Foundations of Stability）
-    path: 1-overview
+    path: overview
     chapters:
       - name: 概述
         file: 概述.md
 
   - name: 未雨绸缪的系统设计（Design Before It Breaks）
-    path: 2-preventive-arch
+    path: preventive-arch
     chapters:
       - file: 备份.md
       - file: 避免单点故障.md
@@ -20,15 +20,16 @@ parts:
       - file: 应急指挥.md
       - file: 删除保护.md
   - name: 从测试到演练（From Testing to Chaos Drills）
-    path: 4-test
+    path: test
     chapters:
       - file: 单元测试：构建稳定性的最小单元.md
       - file: 测试流水线.md
         name: 流水线三部曲
       - file: 混沌测试.md
   - name: 可观测性架构
-    path: 3-observability
+    path: observability
     chapters:
-      - file: 告警.md
       - file: 可观测架构.md
+        name: 让系统说人话：可观测性实战
       - file: 指标监控.md
+      - file: 告警.md
