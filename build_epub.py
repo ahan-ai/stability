@@ -56,9 +56,16 @@ def read_book_yaml():
         data = yaml.safe_load(f)
     return data
 
-# 将 Markdown 转 HTML
+# 将 Markdown 转 HTML，支持表格、代码块、脚注、删除线
 def md_to_html(md_text):
-    return markdown2.markdown(md_text)
+    extras = [
+        "tables",                 # 表格
+        "fenced-code-blocks",     # ``` 代码块
+        "footnotes",              # 脚注
+        "strike",                 # 删除线
+        "cuddled-lists",          # 紧挨的列表
+    ]
+    return markdown2.markdown(md_text, extras=extras)
 
 # 生成 EPUB
 def build_epub(book_data):
@@ -71,7 +78,12 @@ def build_epub(book_data):
     # 添加 CSS
     if os.path.exists(CSS_PATH):
         with open(CSS_PATH, "r", encoding="utf-8") as f:
-            style = epub.EpubItem(uid="style_nav", file_name="style/style.css", media_type="text/css", content=f.read())
+            style = epub.EpubItem(
+                uid="style_nav",
+                file_name="style/style.css",
+                media_type="text/css",
+                content=f.read()
+            )
             book.add_item(style)
 
     spine = ["nav"]
