@@ -17,34 +17,59 @@ DEFAULT_IMAGE = os.path.join(BASE_DIR, "images/empty.png")
 os.makedirs(BUILD_DIR, exist_ok=True)
 os.makedirs(MEDIA_DIR, exist_ok=True)
 
-# 下载远程图片到本地 media 文件夹
-def download_image(url):
-    h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
-    fname = f"img-{h}.jpg"
-    out_path = os.path.join(MEDIA_DIR, fname)
-    if os.path.exists(out_path):
-        return out_path
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = resp.read()
-        with open(out_path, "wb") as f:
-            f.write(data)
-        return out_path
-    except Exception as e:
-        print("⚠️ 下载图片失败:", url, e)
-        return DEFAULT_IMAGE
+# 下载远程图片或读取本地图片，添加到 EPUB
+def add_image_to_book(md_path, book, url_or_path):
+    """
+    返回 EpubHtml 中引用的 file_name
+    """
+    h = hashlib.sha1(url_or_path.encode("utf-8")).hexdigest()[:12]
+    ext = os.path.splitext(url_or_path)[1].lower()
+    if ext not in ['.jpg', '.jpeg', '.png', '.gif']:
+        ext = '.jpg'
+    fname = f"img-{h}{ext}"
+    epub_path = f"images/{fname}"
 
-# 替换 Markdown 图片为本地路径
-def localize_images(md_text):
+    # 下载远程图片或使用本地图片
+    if url_or_path.startswith("http"):
+        local_path = os.path.join(MEDIA_DIR, fname)
+        if not os.path.exists(local_path):
+            try:
+                req = urllib.request.Request(url_or_path, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    data = resp.read()
+                with open(local_path, "wb") as f:
+                    f.write(data)
+            except Exception as e:
+                print("⚠️ 下载图片失败:", url_or_path, e)
+                local_path = DEFAULT_IMAGE
+    else:
+        local_path = os.path.join(os.path.dirname(md_path), url_or_path)
+        # local_path = url_or_path
+        if not os.path.exists(local_path):
+            print("⚠️ 图片不存在:", local_path)
+            local_path = DEFAULT_IMAGE
+
+    # 读取图片内容
+    with open(local_path, "rb") as f:
+        content = f.read()
+
+    # 创建 EpubItem 添加到书中
+    img_item = epub.EpubItem(
+        uid=f"img-{h}",
+        file_name=epub_path,
+        media_type=f"image/{ext[1:]}",
+        content=content
+    )
+    book.add_item(img_item)
+    return epub_path  # HTML 中引用的路径
+
+# 替换 Markdown 图片为 EPUB 内部路径
+def localize_images(md_path, md_text, book):
     img_re = re.compile(r'!\[([^\]]*)\]\((\S+?)\)')
     def repl(m):
         alt, url = m.groups()
-        if url.startswith("http"):
-            local = download_image(url)
-            return f'![{alt}]({local})'
-        else:
-            return m.group(0)
+        epub_path = add_image_to_book(md_path, book, url)
+        return f'![{alt}]({epub_path})'
     return img_re.sub(repl, md_text)
 
 # 读取 book.yaml
@@ -97,7 +122,7 @@ def build_epub(book_data):
         readme_file = os.path.join(part_path, "readme.md")
         part_content = ""
         if os.path.exists(readme_file):
-            part_content = localize_images(open(readme_file, "r", encoding="utf-8").read())
+            part_content = localize_images(readme_file, open(readme_file, "r", encoding="utf-8").read(), book)
         part_html = md_to_html(f"# {part_title}\n\n{part_content}")
         part_item = epub.EpubHtml(title=part_title, file_name=f"part{part_idx}_intro.xhtml", content=part_html)
         book.add_item(part_item)
@@ -109,7 +134,7 @@ def build_epub(book_data):
             ch_file = os.path.join(part_path, ch["file"])
             ch_name = ch.get("name", os.path.splitext(ch["file"])[0])
             if os.path.exists(ch_file):
-                ch_md = localize_images(open(ch_file, "r", encoding="utf-8").read())
+                ch_md = localize_images(ch_file, open(ch_file, "r", encoding="utf-8").read(), book)
                 ch_html = md_to_html(f"# {ch_name}\n\n{ch_md}")
                 ch_item = epub.EpubHtml(title=ch_name, file_name=f"part{part_idx}_ch{ch_idx}.xhtml", content=ch_html)
                 book.add_item(ch_item)
